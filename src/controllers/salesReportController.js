@@ -1,8 +1,5 @@
 import {
   getDailySales,
-  getMonthlySales,
-  getYearlySales,
-  filterSalesByCategory,
   addSalesReport,
 } from "../services/salesReportService.js";
 import { InternalServerError } from "../utils/errors.js";
@@ -45,44 +42,6 @@ export async function getDailySalesReportController(request, reply) {
     request.log.error(error);
     throw new InternalServerError(
       "Error fetching daily sales report. Details: " + error.message
-    );
-  }
-}
-
-export async function getMonthlySalesReportController(request, reply) {
-  try {
-    const report = await getMonthlySales();
-    return reply.send({ report });
-  } catch (error) {
-    request.log.error(error);
-    throw new InternalServerError(
-      "Error fetching monthly sales report. Details: " + error.message
-    );
-  }
-}
-
-export async function getYearlySalesReportController(request, reply) {
-  try {
-    const report = await getYearlySales();
-    return reply.send({ report });
-  } catch (error) {
-    request.log.error(error);
-    throw new InternalServerError(
-      "Error fetching yearly sales report. Details: " + error.message
-    );
-  }
-}
-
-export async function filterSalesByCategoryController(request, reply) {
-  const { category } = request.query;
-
-  try {
-    const report = await filterSalesByCategory(category);
-    return reply.send({ report });
-  } catch (error) {
-    request.log.error(error);
-    throw new InternalServerError(
-      "Error fetching sales report by category. Details: " + error.message
     );
   }
 }

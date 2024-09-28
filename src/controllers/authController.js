@@ -6,8 +6,9 @@ import {
 import { userSchema } from "../models/userSchema.js";
 import { InternalServerError } from "../utils/errors.js";
 import { z } from "zod";
-export async function register(request, reply) {
-  const { firstName, lastName, email, password, role } = request.body;
+
+export async function register(request, reply, role) {
+  const { firstName, lastName, email, password } = request.body;
 
   try {
     const parsedData = userSchema.parse({

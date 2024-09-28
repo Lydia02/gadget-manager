@@ -1,8 +1,6 @@
-// schema.prisma
-
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // The environment variable for your database connection
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -15,11 +13,11 @@ model User {
   lastName     String
   email        String        @unique
   password     String
-  role         String        @default("user") // Defaults to 'user', 'admin' is also possible
+  role         String        @default("user")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  transactions Transaction[] // Relationship with transactions
-  orders       Order[] // Add reverse relation for orders
+  transactions Transaction[]
+  orders       Order[]
 }
 
 model Product {
@@ -28,22 +26,23 @@ model Product {
   description String
   price       Float
   category    String
-  quantity    Int // Use 'quantity' for product stock
-  discount    Int? // Optional discount field
+  quantity    Int
+  discount    Int?
+  specifications Specification[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  transactions Transaction[] // A product can be in many transactions
-  salesReports SalesReport[] // A product can be in many sales reports
-  orderItems   OrderItem[] // Add reverse relation for order items
+  transactions  Transaction[]
+  salesReports  SalesReport[]
+  orderItems    OrderItem[]
 }
 
 model Transaction {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   productId Int
   userId    Int
-  product   Product @relation(fields: [productId], references: [id])
-  user      User    @relation(fields: [userId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade) // Add `onDelete: Cascade` here
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model Employee {
@@ -59,7 +58,7 @@ model Employee {
 model SalesReport {
   id          Int      @id @default(autoincrement())
   productId   Int
-  product     Product  @relation(fields: [productId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade) // Add `onDelete: Cascade` here
   quantity    Int
   totalAmount Float
   saleDate    DateTime @default(now())
@@ -71,7 +70,7 @@ model Order {
   user      User        @relation(fields: [userId], references: [id])
   total     Float
   createdAt DateTime    @default(now())
-  items     OrderItem[] // An order can have many items
+  items     OrderItem[]
 }
 
 model OrderItem {
@@ -79,6 +78,13 @@ model OrderItem {
   orderId   Int
   productId Int
   quantity  Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade) // Add `onDelete: Cascade` here
   order     Order   @relation(fields: [orderId], references: [id])
+}
+model Specification {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  name      String
+  value     String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

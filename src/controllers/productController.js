@@ -10,7 +10,8 @@ import {
 import { InternalServerError, NotFoundError } from "../utils/errors.js";
 
 export async function createProductController(request, reply) {
-  const { name, description, price, category, quantity } = request.body;
+  const { name, description, price, category, quantity, specifications } =
+    request.body;
 
   try {
     const product = await createProduct({
@@ -19,6 +20,7 @@ export async function createProductController(request, reply) {
       price,
       category,
       quantity,
+      specifications,
     });
     return reply
       .code(201)
@@ -61,7 +63,8 @@ export async function getProductByIdController(request, reply) {
 }
 
 export async function editProductController(request, reply) {
-  const { id, name, description, price, category } = request.body;
+  const { id, name, description, price, category, specifications } =
+    request.body;
 
   try {
     const product = await editProduct({
@@ -70,6 +73,7 @@ export async function editProductController(request, reply) {
       description,
       price,
       category,
+      specifications,
     });
     return reply.send({ message: "Product updated successfully", product });
   } catch (error) {

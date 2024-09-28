@@ -22,6 +22,23 @@ export async function makePurchase({ productId, quantity, userId }) {
         ],
       },
     },
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              name: true,
+              specifications: {
+                select: {
+                  name: true,
+                  value: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   await prisma.product.update({
@@ -38,7 +55,17 @@ export async function getOrderHistory(userId) {
     include: {
       items: {
         include: {
-          product: true,
+          product: {
+            select: {
+              name: true,
+              specifications: {
+                select: {
+                  name: true,
+                  value: true,
+                },
+              },
+            },
+          },
         },
       },
     },

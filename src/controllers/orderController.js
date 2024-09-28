@@ -7,7 +7,10 @@ export async function makePurchaseController(request, reply) {
 
   try {
     const order = await makePurchase({ productId, quantity, userId });
-    return reply.code(201).send({ message: "Purchase successful", order });
+    return reply.code(201).send({
+      message: "Purchase successful",
+      order,
+    });
   } catch (error) {
     request.log.error(error);
     throw new InternalServerError(
@@ -15,7 +18,6 @@ export async function makePurchaseController(request, reply) {
     );
   }
 }
-
 export async function getOrderHistoryController(request, reply) {
   const userId = request.user.id;
 

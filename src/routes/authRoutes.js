@@ -11,11 +11,26 @@ export async function authRoutes(fastify, options) {
           lastName: { type: "string" },
           email: { type: "string" },
           password: { type: "string" },
-          role: { type: "string" },
         },
       },
     },
-    handler: register,
+    handler: (request, reply) => register(request, reply, "user"), // Pass "user" role
+  });
+
+  fastify.post("/admin/register", {
+    schema: {
+      body: {
+        type: "object",
+        required: ["firstName", "lastName", "email", "password"],
+        properties: {
+          firstName: { type: "string" },
+          lastName: { type: "string" },
+          email: { type: "string" },
+          password: { type: "string" },
+        },
+      },
+    },
+    handler: (request, reply) => register(request, reply, "admin"),
   });
 
   fastify.post("/login", {

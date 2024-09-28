@@ -6,6 +6,7 @@ export async function createProduct({
   price,
   category,
   quantity,
+  specifications,
 }) {
   return prisma.product.create({
     data: {
@@ -14,6 +15,9 @@ export async function createProduct({
       price,
       category,
       quantity,
+      specifications: {
+        create: specifications,
+      },
     },
   });
 }
@@ -28,6 +32,7 @@ export async function getAllProducts() {
       category: true,
       quantity: true,
       discount: true,
+      specifications: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -44,6 +49,7 @@ export async function getProductById(id) {
       category: true,
       quantity: true,
       discount: true,
+      specifications: true,
     },
   });
 }

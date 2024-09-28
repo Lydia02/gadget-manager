@@ -35,48 +35,15 @@ export async function getDailySales() {
         lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
       },
     },
-  });
-}
-
-export async function getMonthlySales() {
-  const firstDayOfMonth = new Date(
-    new Date().getFullYear(),
-    new Date().getMonth(),
-    1
-  );
-
-  return prisma.salesReport.findMany({
-    where: {
-      saleDate: {
-        gte: firstDayOfMonth,
-        lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
-      },
-    },
-  });
-}
-
-export async function getYearlySales() {
-  const firstDayOfYear = new Date(new Date().getFullYear(), 0, 1);
-
-  return prisma.salesReport.findMany({
-    where: {
-      saleDate: {
-        gte: firstDayOfYear,
-        lt: new Date(new Date().getFullYear() + 1, 0, 1),
-      },
-    },
-  });
-}
-
-export async function filterSalesByCategory(category) {
-  return prisma.salesReport.findMany({
-    where: {
-      product: {
-        category: category,
-      },
-    },
     include: {
-      product: true,
+      product: {
+        select: {
+          name: true,
+          price: true,
+          category: true,
+        },
+      },
     },
+    orderBy: { saleDate: "asc" },
   });
 }

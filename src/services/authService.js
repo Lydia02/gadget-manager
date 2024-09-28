@@ -38,6 +38,7 @@ export async function loginUser(email, password) {
 
   return user;
 }
+
 const blacklist = new Set();
 
 export function blacklistToken(token) {
