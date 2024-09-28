@@ -2,7 +2,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") // The environment variable for your database connection
 }
 
 generator client {
@@ -10,35 +10,75 @@ generator client {
 }
 
 model User {
+  id           Int           @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String        @unique
+  password     String
+  role         String        @default("user") // Defaults to 'user', 'admin' is also possible
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[] // Relationship with transactions
+  orders       Order[] // Add reverse relation for orders
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  category    String
+  quantity    Int // Use 'quantity' for product stock
+  discount    Int? // Optional discount field
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions Transaction[] // A product can be in many transactions
+  salesReports SalesReport[] // A product can be in many sales reports
+  orderItems   OrderItem[] // Add reverse relation for order items
+}
+
+model Transaction {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  userId    Int
+  product   Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Employee {
   id        Int      @id @default(autoincrement())
   firstName String
   lastName  String
   email     String   @unique
-  password  String
-  role      String   @default("user")  // Defaults to 'user', 'admin' is also possible
+  role      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  transactions Transaction[] // Relationship with transactions
 }
 
-model Product {
-  id           Int           @id @default(autoincrement())
-  name         String
-  price        Float
-  stock        Int
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  transactions Transaction[]
+model SalesReport {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int
+  totalAmount Float
+  saleDate    DateTime @default(now())
 }
 
-model Transaction {
-  id        Int      @id @default(autoincrement())
-  productId Int
+model Order {
+  id        Int         @id @default(autoincrement())
   userId    Int
-  quantity  Int
-  amount     Float
-  createdAt DateTime @default(now())
+  user      User        @relation(fields: [userId], references: [id])
+  total     Float
+  createdAt DateTime    @default(now())
+  items     OrderItem[] // An order can have many items
+}
 
-  product Product @relation(fields: [productId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  product   Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
 }
